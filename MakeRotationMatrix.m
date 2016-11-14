@@ -1,7 +1,6 @@
 function [Fx,Fy] = MakeRotationMatrix(S)
 % Creates the rotation matrices for a given list of F and M numbers
 % Simon Coop
-% Last edited 26/09/2016
 
 F = S(:,5); % assuming S has been made with MakeStateVector();
 M = S(:,6);

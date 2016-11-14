@@ -3,7 +3,6 @@ function dz = MakeDipoleMatrix(S,element,delta)
 % quantisation axis. This can be rotated using the rotation matrices to
 % find the other Cartesian components.
 % Simon Coop
-% Last edited 26/09/2016
 
 if nargin == 1
     element = 1;

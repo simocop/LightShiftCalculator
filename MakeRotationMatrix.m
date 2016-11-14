@@ -12,7 +12,7 @@ Mmat = repmat(M,1,ns);
 
 [Ij,Ii] = meshgrid(1:ns);
 
-Fp = sqrt((Fmat - Mmat).*(Fmat + Mmat + 1)).*(Ii + 1 == Ij);
+Fp = sqrt((Fmat - Mmat + 1).*(Fmat + Mmat)).*(Ii == Ij + 1);
 Fm = conj(Fp');
 
 Fx = 1/2*(Fp + Fm);

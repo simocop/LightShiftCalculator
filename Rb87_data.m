@@ -1,6 +1,5 @@
 %% Generate variables for Stark shift calculation
 % Simon Coop, ICFO
-% Last edited 26/09/2016
 
 clear
 

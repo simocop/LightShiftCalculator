@@ -1,10 +1,10 @@
 function S = MakeStateVector(degeneracy_shift)
 
+% Make vector of energy levels in 87Rb
+
 if nargin == 0
     degeneracy_shift = 0;
 end
-
-% Make vector of energy levels in 87Rb
 
 S = [];
 

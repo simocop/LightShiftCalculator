@@ -1,5 +1,6 @@
 %% Generate variables for Stark shift calculation
 % Simon Coop, ICFO
+% Last edited 31/01/2017
 
 clear
 
@@ -9,116 +10,85 @@ end
 
 %% Constants
 h = 6.626070040e-34; % Js
-e = 1.6021766208e-19; % C
+ec = 1.6021766208e-19; % C
 a0 = 5.2917721067e-11; % m, Bohr radius
 c = 299792458; % m/s
 e0 = 8.8541878176e-12;
 I = 3/2; % Nuclear spin of Rb87
 
-%% Maximum value of n and L to include in the list of states.
-% The data file has data up to n = 11 and L = 3. 
-max_desired_n = 6;
-max_desired_l = 3;
+%%
 
-%% Read in dipole matrix elements into a big matrix
-alldata = importdata('Rbdata.txt',' ',19);
-data = alldata.data;
-nmax = 0;
-Lmax = 0;
-Jmax = 0;
-for ii = 1:length(data(:,1))
-    
-    if ~isnan(data(ii,1)) && data(ii,7) < 0
-        n = data(ii,1);
-        np = data(ii,3);
-        
-        switch data(ii,2)
-            case -1
-                L = 0;
-                J = 1/2;
-            case 1
-                L = 1;
-                J = 1/2;
-            case -2
-                L = 1;
-                J = 3/2;
-            case 2
-                L = 2;
-                J = 3/2;
-            case -3
-                L = 2;
-                J = 5/2;
-            case 3
-                L = 3;
-                J = 5/2;
-            case -4
-                L = 3;
-                J = 7/2;
-        end
-        
-        switch data(ii,4)
-            case -1
-                Lp = 0;
-                Jp = 1/2;
-            case 1
-                Lp = 1;
-                Jp = 1/2;
-            case -2
-                Lp = 1;
-                Jp = 3/2;
-            case 2
-                Lp = 2;
-                Jp = 3/2;
-            case -3
-                Lp = 2;
-                Jp = 5/2;
-            case 3
-                Lp = 3;
-                Jp = 5/2;
-            case -4
-                Lp = 3;
-                Jp = 7/2;
-        end
-        
-        if (L <= max_desired_l && Lp <= max_desired_l) ...
-                && (n <= max_desired_n && np <= max_desired_n)
-            
-            f1 = data(ii,6)*100*c; % convert wavenumbers to Hz
-            f2 = data(ii,7)*100*c;
-            
-            f(n,L+1,J+1/2) = f1;
-            f(np,Lp+1,Jp+1/2) = f2;
-            
-            DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = data(ii,9)*e*a0;
-            
-            if n > nmax
-                nmax = n;
-            end
-            if L > Lmax
-                Lmax = L;
-            end
-            if J > Jmax
-                Jmax = J;
-            end
-            
-            if np > nmax
-                nmax = np;
-            end
-            if Lp > Lmax
-                Lmax = Lp;
-            end
-            if Jp > Jmax
-                Jmax = Jp;
-            end
-        end
-    end
-end
+nmax = 6;
+Lmax = 3;
+Jmax = 7/2;
 
-if nmax == 11
-    DipMat(nmax,:,:,:,:,:) = 0;
-end
+%% Energies from NIST ASD
 
-f(f == 0) = NaN;
+f = NaN(nmax,Lmax+1,Jmax+1/2);
+
+n = 5,L = 0, J = 1/2;
+f(n,L+1,J+1/2) = 0;
+
+n = 5,L = 1, J = 1/2;
+f(n,L+1,J+1/2) = 12578.95;
+
+n = 5,L = 1, J = 3/2;
+f(n,L+1,J+1/2) = 12816.545;
+
+n = 4,L = 2, J = 3/2;
+f(n,L+1,J+1/2) = 19355.649;
+
+n = 4,L = 2, J = 5/2;
+f(n,L+1,J+1/2) = 19355.203;
+
+n = 6,L = 0, J = 1/2;
+f(n,L+1,J+1/2) = 20132.51;
+
+n = 4,L = 3, J = 5/2;
+f(n,L+1,J+1/2) = 26792.118;
+
+n = 4,L = 3, J = 7/2;
+f(n,L+1,J+1/2) = 26792.092;
+
+f = f*100*c;
+
+%% Manual entry of dipole matrix elements
+
+DipMat = zeros(nmax,Lmax+1,Jmax+1/2,nmax,Lmax+1,Jmax+1/2);
+
+% From PRA 83 052508 2011
+n = 5,L = 0, J = 1/2, np = 5, Lp = 1, Jp = 1/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 4.253;
+
+n = 5,L = 0, J = 1/2, np = 5, Lp = 1, Jp = 3/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 6.003;
+
+n = 5,L = 1, J = 1/2, np = 6, Lp = 0, Jp = 1/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 4.145;
+
+n = 5,L = 1, J = 3/2, np = 6, Lp = 0, Jp = 1/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 6.047;
+
+n = 5,L = 1, J = 1/2, np = 4, Lp = 2, Jp = 3/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 8.037;
+
+n = 5,L = 1, J = 3/2, np = 4, Lp = 2, Jp = 3/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 3.628;
+
+n = 5,L = 1, J = 3/2, np = 4, Lp = 2, Jp = 5/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) = 10.889;
+
+% Direct from Safronova
+n = 4,L = 2, J = 3/2, np = 4, Lp = 3, Jp = 5/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) =  10.4185;
+
+n = 4,L = 2, J = 5/2, np = 4, Lp = 3, Jp = 5/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) =  2.7861;
+
+n = 4,L = 2, J = 5/2, np = 4, Lp = 3, Jp = 7/2;
+DipMat(n,L+1,J+1/2,np,Lp+1,Jp+1/2) =  12.4601;
+
+DipMat = DipMat*a0*ec;
 
 %% Hyperfine A & B contants
 % Experimental & calc'd values from PRA 83 052508 2011
@@ -128,51 +98,18 @@ A(5,1,1) = 3417.341;
 A(5,2,1) = 406.2;
 A(5,2,2) = 84.845;
 A(6,1,1) = 807.66;
-A(6,2,1) = 132.56;
-A(6,2,2) = 27.7;
-A(7,1,1) = 319.759;
-A(7,2,1) = 59.32;
-A(7,2,2) = 12.57;
-A(8,1,1) = 159.2;
-A(8,2,1) = 32.12;
-A(8,2,2) = 6.57;
-A(9,1,1) = 90.9;
-A(9,2,1) = 19.59; % calc'd
-A(9,2,2) = 4.02; % calc'd
 A(4,3,2) = 25.1;
 A(4,3,3) = -16.9;
 A(5,3,2) = 16.57;
 A(5,3,3) = -7.44;
-A(6,3,2) = 8.76;
-A(6,3,3) = -3.3;
-A(7,3,2) = 5.04;
-A(7,3,3) = -1.78;
-A(8,3,2) = 3.13;
-A(8,3,3) = -1.06;
-A(9,3,2) = 2.07;
-A(9,3,3) = -0.69;
 
 A = A*1e6;
 
 B = ones(nmax,Lmax+1,Jmax+1/2)/1e6;
 
 B(5,2,2) = 12.52;
-B(6,2,2) = 3.953;
-B(7,2,2) = 1.762;
-B(8,2,2) = 0.935;
-B(9,2,2) = 0.55;
 B(4,3,2) = 2.23; % calc'd
-B(4,3,3) = 4.149; % from OPTICS LETTERS / Vol. 32, No. 19 / October 1, 2007
-B(5,3,2) = 0.913; % calc'd
-B(5,3,3) = 1.29; % calc'd
-B(6,3,2) = 0.53;
-B(6,3,3) = 0.623; % calc'd
-B(7,3,2) = 0.26;
-B(7,3,3) = 0.343; % calc'd
-B(8,3,2) = 0.17;
-B(8,3,3) = 0.207;% calc'd
-B(9,3,2) = 0.11;
-B(9,3,3) = 0.133; % calc'd
+B(4,3,3) = 4.149; % from OPTICS LETTERS / Vol. 32, Iss. 19, p. 2810 / October 1, 2007
 
 B = B*1e6;
 
